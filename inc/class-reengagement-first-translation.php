@@ -9,8 +9,6 @@ namespace WordPressdotorg\GlotPress\Engagement;
 
 use GP;
 use GP_Translation;
-use function Automattic\Jetpack\Creative_Mail\error_notice;
-use function cli\err;
 
 /**
  * Sends an email to translators who for the first time had a translation approved.
