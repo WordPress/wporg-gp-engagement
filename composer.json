@@ -1,0 +1,27 @@
+{
+  "name": "wordpress/wporg-gp-engagement",
+  "license": "GPL-2.0-or-later",
+  "description": "Send notifications to try to engage the translators.",
+  "type": "wordpress-plugin",
+  "version": "1.0.0",
+  "keywords": ["wordpress", "plugin", "engagement", "notification"],
+
+  "config": {
+    "platform": {
+      "php": "7.4"
+    },
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "require": {},
+  "require-dev" : {
+    "squizlabs/php_codesniffer": "^3.6",
+    "friendsofphp/php-cs-fixer": "^3.0",
+    "wp-coding-standards/wpcs": "^3.0"
+  },
+  "scripts": {
+    "lint": "phpcs --extensions=php -s -p",
+    "format": "phpcbf -p"
+  }
+}

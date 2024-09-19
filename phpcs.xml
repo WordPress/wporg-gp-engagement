@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ruleset name="WordPressCodingStandards">
+    <!-- Use the WordPress Core Coding Standard -->
+    <rule ref="WordPress"/>
+
+    <!-- Include directories to be scanned -->
+    <file>.</file>
+    <file>inc</file>
+
+    <!-- Exclude the vendor directory -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Include additional WordPress-specific rules -->
+    <rule ref="WordPress-Core"/>
+    <rule ref="WordPress-Extra"/>
+    <rule ref="WordPress-Docs"/>
+
+    <!-- Additional arguments -->
+    <arg name="basepath" value="."/>
+</ruleset>
