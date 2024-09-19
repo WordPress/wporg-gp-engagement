@@ -3,7 +3,7 @@
 This plugin, designed for https://translate.wordpress.org/, adds some 
 notifications to try to engage the translators.
 
-## First transltaion approved 
+## First translation approved  
 
 Sends an email notification to a translator when her first translation 
 is approved.
