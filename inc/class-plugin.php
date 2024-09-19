@@ -56,5 +56,7 @@ class Plugin extends GP_Route {
 	public function gp_translation_saved( GP_Translation $translation ) {
 		$reengament = new Reengagement_First_Translation();
 		$reengament( $translation );
+		$milestone = new Translation_Milestone();
+		$milestone( $translation );
 	}
 }
