@@ -12,6 +12,7 @@ namespace WordPressdotorg\GlotPress\Engagement;
 
 use GP_Route;
 use GP_Translation;
+use WP_CLI;
 
 /**
  * Main plugin class.
@@ -44,6 +45,7 @@ class Plugin extends GP_Route {
 	public function __construct() {
 		parent::__construct();
 		add_action( 'gp_translation_saved', array( $this, 'gp_translation_saved' ) );
+		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 	}
 
 	/**
@@ -58,5 +60,16 @@ class Plugin extends GP_Route {
 		$reengament( $translation );
 		$milestone = new Translation_Milestone();
 		$milestone( $translation );
+	}
+
+	/**
+	 * Register the WP CLI command.
+	 *
+	 * @return void
+	 */
+	public function plugins_loaded() {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			WP_CLI::add_command( 'wporg-translate engagement-anniversary', __NAMESPACE__ . '\Anniversary_CLI' );
+		}
 	}
 }
