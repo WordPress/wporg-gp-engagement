@@ -17,9 +17,9 @@ a number of approved translations.
 
 ![image](https://github.com/user-attachments/assets/85fe555c-3f8a-41f8-bfd2-c6a95f237adf)
 
-## Translation anniversary
+## Translation anniversary
 
-Send an email notification to a translator when it is her translation anniversary.
+Sends an email notification to a translator when it is her translation anniversary.
 
 <img src="https://github.com/user-attachments/assets/473028d3-9012-40c4-97b3-360874cbc516" width="750px">
 
