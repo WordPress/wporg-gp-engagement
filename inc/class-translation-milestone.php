@@ -136,12 +136,8 @@ The Global Polyglots Team',
 
 		$message = wp_kses( $message, $allowed_html );
 
-		$headers = array(
-			'Content-Type: text/html; charset=UTF-8',
-			'From: Translating WordPress.org <no-reply@wordpress.org>',
-		);
-
-		wp_mail( $user->user_email, $subject, $message, $headers );
+		$email = new Notification();
+		$email->send_email( $user, $subject, $message );
 	}
 
 	/**
