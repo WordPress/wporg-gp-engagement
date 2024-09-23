@@ -25,6 +25,7 @@ class Notification {
 	 */
 	public function __construct() {
 		add_action( 'wporg_send_email_event', array( $this, 'send_scheduled_email' ), 10, 4 );
+		add_action( 'wporg_send_slack_notification_event', array( $this, 'send_scheduled_slack_notification' ), 10, 2 );
 	}
 
 	/**
@@ -79,7 +80,21 @@ class Notification {
 	public function send_slack_notification( string $message, string $channel ) {
 		if ( defined( 'WPORG_SANDBOXED' ) && WPORG_SANDBOXED ) {
 			slack_dm( $message, $channel );
+		} else {
+			wp_schedule_single_event( time(), 'wporg_send_slack_notification_event', array( $message, $channel ) );
 		}
+	}
+
+	/**
+	 * Send a scheduled Slack notification.
+	 *
+	 * @param string $message The message to send.
+	 * @param string $channel The channel to send the message.
+	 *
+	 * @return void
+	 */
+	public function send_scheduled_slack_notification( string $message, string $channel ) {
 		// Todo: define the channel to use in production.
+		slack_dm( $message, $channel );
 	}
 }
