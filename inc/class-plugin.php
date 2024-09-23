@@ -44,8 +44,10 @@ class Plugin extends GP_Route {
 	 */
 	public function __construct() {
 		parent::__construct();
+		add_action( 'init', array( $this, 'wp_schedule_crons' ) );
 		add_action( 'gp_translation_saved', array( $this, 'gp_translation_saved' ) );
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
+		add_action( 'gp_engagement_anniversary', array( new Anniversary(), '__invoke' ) );
 	}
 
 	/**
@@ -68,8 +70,27 @@ class Plugin extends GP_Route {
 	 * @return void
 	 */
 	public function plugins_loaded() {
+		// Restrict WP-CLI command to sandboxes.
+		if ( ! defined( 'WPORG_SANDBOXED' ) || ! WPORG_SANDBOXED ) {
+			return;
+		}
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			WP_CLI::add_command( 'wporg-translate engagement-anniversary', __NAMESPACE__ . '\Anniversary_CLI' );
+		}
+	}
+
+	/**
+	 * Schedule the crons.
+	 *
+	 * @return void
+	 */
+	public function wp_schedule_crons() {
+		if ( defined( 'WPORG_SANDBOXED' ) && WPORG_SANDBOXED ) {
+			return;
+		}
+
+		if ( ! wp_next_scheduled( 'gp_engagement_anniversary' ) ) {
+			wp_schedule_event( time(), 'daily', 'gp_engagement_anniversary' );
 		}
 	}
 }

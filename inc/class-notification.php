@@ -47,7 +47,7 @@ class Notification {
 			if ( ! $user ) {
 				return;
 			}
-			$email = $user->user_email;
+			$email = sanitize_email( $user->user_email );
 		}
 
 		wp_mail( $email, $subject, $message, $headers );
