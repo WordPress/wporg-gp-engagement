@@ -167,8 +167,8 @@ The Global Polyglots Team
 			$project_url
 		);
 
-		// Todo: Update to use a dedicated channel.
-		slack_dm( $message, '@amieiro', false );
+		$slack = new Notification();
+		$slack->send_slack_notification( $message, '@amieiro' );
 	}
 
 	/**

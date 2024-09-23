@@ -52,4 +52,19 @@ class Notification {
 
 		wp_mail( $email, $subject, $message, $headers );
 	}
+
+	/**
+	 * Send a Slack notification.
+	 *
+	 * @param string $message The message to send.
+	 * @param string $channel The channel to send the message.
+	 *
+	 * @return void
+	 */
+	public function send_slack_notification( string $message, string $channel ) {
+		if ( defined( 'WPORG_SANDBOXED' ) && WPORG_SANDBOXED ) {
+			slack_dm( $message, $channel );
+		}
+		// Todo: define the channel to use in production.
+	}
 }
