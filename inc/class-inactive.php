@@ -25,8 +25,8 @@ class Inactive {
 			$date_years_ago = ( new DateTime() )->modify( "-$years year" )->format( 'Y-m-d' );
 			$all_users      = $this->get_users_with_translation_on_date( $date_years_ago );
 			$inactive_users = $this->get_inactive_users( $all_users, $date_years_ago );
-			$this->send_email_to_translators( $inactive_users, 1 );
-			$this->send_slack_notification( $inactive_users, 1 );
+			$this->send_email_to_translators( $inactive_users, $years );
+			$this->send_slack_notification( $inactive_users, $years );
 		}
 	}
 
