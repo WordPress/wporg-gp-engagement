@@ -23,3 +23,10 @@ Sends an email notification to a translator when it is her translation anniversa
 
 <img src="https://github.com/user-attachments/assets/473028d3-9012-40c4-97b3-360874cbc516" width="750px">
 
+## Inactive user
+
+Sends an email notification to a translation without activity in the last 1 year, 2 years and 3 years.
+
+<img src="https://github.com/user-attachments/assets/e6b829f5-a833-4beb-8bc1-426d487f611d" width="750px">
+
+
