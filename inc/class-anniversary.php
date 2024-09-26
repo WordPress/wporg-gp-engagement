@@ -45,7 +45,7 @@ class Anniversary {
 		do {
 			$query = $wpdb->prepare(
 				"SELECT user_id, DATE(MIN(date_added)) AS min_date
-				FROM translate_translations
+				FROM `{$wpdb->gp_translations}`
 				WHERE status = 'current'
 				  AND user_id BETWEEN %d AND %d
 				  AND YEAR(date_added) < YEAR(CURDATE())

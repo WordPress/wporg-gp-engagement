@@ -76,6 +76,7 @@ class Plugin extends GP_Route {
 		}
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			WP_CLI::add_command( 'wporg-translate engagement-anniversary', __NAMESPACE__ . '\Anniversary_CLI' );
+			WP_CLI::add_command( 'wporg-translate engagement-inactive', __NAMESPACE__ . '\Inactive_CLI' );
 		}
 	}
 
