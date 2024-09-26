@@ -48,6 +48,7 @@ class Plugin extends GP_Route {
 		add_action( 'gp_translation_saved', array( $this, 'gp_translation_saved' ) );
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		add_action( 'gp_engagement_anniversary', array( new Anniversary(), '__invoke' ) );
+		add_action( 'gp_engagement_inactive', array( new Inactive(), '__invoke' ) );
 	}
 
 	/**
@@ -92,6 +93,9 @@ class Plugin extends GP_Route {
 
 		if ( ! wp_next_scheduled( 'gp_engagement_anniversary' ) ) {
 			wp_schedule_event( time(), 'daily', 'gp_engagement_anniversary' );
+		}
+		if ( ! wp_next_scheduled( 'gp_engagement_inactive' ) ) {
+			wp_schedule_event( time(), 'daily', 'gp_engagement_inactive' );
 		}
 	}
 }
