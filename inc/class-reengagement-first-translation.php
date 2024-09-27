@@ -2,7 +2,7 @@
 /**
  * This class sends an email to translators who for the first time had a translation approved.
  *
- * @package wporg-gp-customizations
+ * @package wporg-gp-engagement
  */
 
 namespace WordPressdotorg\GlotPress\Engagement;
@@ -113,7 +113,7 @@ class Reengagement_First_Translation {
 		list( $user, $translation_url, $project_url ) = $notification_elements;
 
 		// translators: Email subject.
-		$subject = __( 'Your first translation has been approved!', 'wporg' );
+		$subject = __( 'Your first translation has been approved!', 'wporg-gp-engagement' );
 		$message = sprintf(
 		// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.
 			'

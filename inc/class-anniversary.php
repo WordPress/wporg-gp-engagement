@@ -2,7 +2,7 @@
 /**
  * This class sends an email to translators in their translation anniversary.
  *
- * @package wporg-gp-customizations
+ * @package wporg-gp-engagement
  */
 
 namespace WordPressdotorg\GlotPress\Engagement;
@@ -128,7 +128,7 @@ class Anniversary {
 			$years      = $interval->y;
 
 			// translators: Email subject.
-			$subject = __( 'Today is your WordPress translation anniversary!', 'wporg' );
+			$subject = __( 'Today is your WordPress translation anniversary!', 'wporg-gp-engagement' );
 
 			$message = sprintf(
 			// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.

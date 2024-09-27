@@ -2,7 +2,7 @@
 /**
  * This class sends an email to translators who have been inactive in the last years.
  *
- * @package wporg-gp-customizations
+ * @package wporg-gp-engagement
  */
 
 namespace WordPressdotorg\GlotPress\Engagement;

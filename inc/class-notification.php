@@ -2,7 +2,7 @@
 /**
  * This class manages the notifications.
  *
- * @package wporg-gp-customizations
+ * @package wporg-gp-engagement
  */
 
 namespace WordPressdotorg\GlotPress\Engagement;

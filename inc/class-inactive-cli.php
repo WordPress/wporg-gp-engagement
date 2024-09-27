@@ -5,7 +5,7 @@
  * It has been developed with testing purposes, because the email sending should
  * be done with a cron job.
  *
- * @package wporg-gp-customizations
+ * @package wporg-gp-engagement
  */
 
 namespace WordPressdotorg\GlotPress\Engagement;
