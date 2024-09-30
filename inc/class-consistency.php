@@ -20,7 +20,7 @@ class Consistency {
 	 * @return void
 	 */
 	public function __invoke() {
-		$this->get_users_with_consistency_last_months( 12 );
+		$users_to_notify = $this->get_users_to_notify();
 	}
 
 	/**
@@ -70,5 +70,26 @@ class Consistency {
 		}
 
 		return array_values( $user_ids );
+	}
+
+	/**
+	 * Get the users to notify.
+	 *
+	 * @return array The users to notify.
+	 */
+	private function get_users_to_notify(): array {
+		$months_to_notify = array( 48, 24, 12, 6 );
+		$users_to_notify  = array();
+
+		foreach ( $months_to_notify as $month ) {
+			$current_users = $this->get_users_with_consistency_last_months( $month );
+			// Remove users from previous months.
+			foreach ( $users_to_notify as $previous_users ) {
+				$current_users = array_diff( $current_users, $previous_users );
+			}
+
+			$users_to_notify[ $month ] = $current_users;
+		}
+		return $users_to_notify;
 	}
 }
