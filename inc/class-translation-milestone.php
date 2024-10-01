@@ -113,7 +113,7 @@ class Translation_Milestone {
 	private function send_email_to_translator( GP_Translation $translation, int $milestone ) {
 		$user = get_userdata( $translation->user_id );
 		// translators: Email subject.
-		$subject = sprintf( esc_html__( 'Your have reached a new translation milestone: %d translations', 'wporg-gp-engagement' ), $milestone );
+		$subject = sprintf( esc_html__( 'Thank you for %d translations!', 'wporg-gp-engagement' ), $milestone );
 		$message = sprintf(
 		// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.
 			'
