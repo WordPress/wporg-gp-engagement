@@ -29,4 +29,8 @@ Sends an email notification to a translation without activity in the last 1 year
 
 <img src="https://github.com/user-attachments/assets/e6b829f5-a833-4beb-8bc1-426d487f611d" width="750px">
 
+## Translation consistency
 
+Sends an email notification to a translator that has been translating the last: 48, 24, 12 and 6 months.
+
+<img src="https://github.com/user-attachments/assets/ad8a3b6a-0b21-424c-9852-2e305ff28a39" width="750px">
