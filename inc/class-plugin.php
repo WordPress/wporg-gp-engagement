@@ -45,11 +45,13 @@ class Plugin extends GP_Route {
 	public function __construct() {
 		parent::__construct();
 		add_action( 'init', array( $this, 'wp_schedule_crons' ) );
+		add_action( 'plugins_loaded', array( $this, 'load_cli_commands' ) );
+		add_filter( 'cron_schedules', array( $this, 'add_monthly_schedule' ) );
 		add_action( 'gp_translation_saved', array( new Reengagement_First_Translation(), '__invoke' ) );
 		add_action( 'gp_translation_saved', array( new Translation_Milestone(), '__invoke' ) );
-		add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 		add_action( 'gp_engagement_anniversary', array( new Anniversary(), '__invoke' ) );
 		add_action( 'gp_engagement_inactive', array( new Inactive(), '__invoke' ) );
+		add_action( 'gp_engagement_consistency', array( new Consistency(), '__invoke' ) );
 	}
 
 	/**
@@ -57,7 +59,7 @@ class Plugin extends GP_Route {
 	 *
 	 * @return void
 	 */
-	public function plugins_loaded() {
+	public function load_cli_commands() {
 		// Restrict WP-CLI command to sandboxes.
 		if ( ! defined( 'WPORG_SANDBOXED' ) || ! WPORG_SANDBOXED ) {
 			return;
@@ -67,6 +69,22 @@ class Plugin extends GP_Route {
 			WP_CLI::add_command( 'wporg-translate engagement-inactive', __NAMESPACE__ . '\Inactive_CLI' );
 			WP_CLI::add_command( 'wporg-translate engagement-consistency', __NAMESPACE__ . '\Consistency_CLI' );
 		}
+	}
+
+	/**
+	 * Add custom cron schedules.
+	 *
+	 * @param array $schedules Existing schedules.
+	 *
+	 * @return array Modified schedules.
+	 */
+	public function add_monthly_schedule( array $schedules ): array {
+		$schedules['monthly'] = array(
+			'interval' => MONTH_IN_SECONDS,
+			'display'  => __( 'Once a month' ),
+		);
+
+		return $schedules;
 	}
 
 	/**
@@ -84,6 +102,10 @@ class Plugin extends GP_Route {
 		}
 		if ( ! wp_next_scheduled( 'gp_engagement_inactive' ) ) {
 			wp_schedule_event( time(), 'daily', 'gp_engagement_inactive' );
+		}
+		if ( ! wp_next_scheduled( 'gp_engagement_consistency' ) ) {
+			$timestamp = strtotime( 'first day of next month' );
+			wp_schedule_event( $timestamp, 'monthly', 'gp_engagement_consistency' );
 		}
 	}
 }

@@ -8,8 +8,6 @@
 
 namespace WordPressdotorg\GlotPress\Engagement;
 
-use WP_CLI;
-
 /**
  * Sends an email to translators in their translation anniversary.
  */
