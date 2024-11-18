@@ -8,7 +8,7 @@ notifications to try to engage the translators.
 Sends an email notification to a translator when her first translation 
 is approved.
 
-<img src="https://github.com/user-attachments/assets/927b27f5-3363-4f4f-aa52-51f12440fde6" width="650px">
+<img src="https://github.com/user-attachments/assets/39e5f108-dfc7-40c4-92b6-ffcf80b75dd3" width="1000px">
 
 ## Translation milestone
 
