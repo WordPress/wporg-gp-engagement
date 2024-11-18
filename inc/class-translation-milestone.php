@@ -161,9 +161,9 @@ The Global Polyglots Team',
 
 		// translators: Slack message. %s: Display name. %d: Milestone.
 		$message = sprintf(
-			'We have sent a new message to *%s* about a milestone translation: %d translation approved.',
+			'We have sent a new message to *%s* about a milestone translation: %s translations approved.',
 			$user->display_name,
-			$milestone,
+			number_format_i18n( $milestone ),
 		);
 
 		$slack = new Notification();
