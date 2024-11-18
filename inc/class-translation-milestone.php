@@ -95,6 +95,7 @@ class Translation_Milestone {
 				$translation->user_id
 			)
 		);
+
 		if ( in_array( (int) $approved_translations_count, $this->milestones, true ) ) {
 			return (int) $approved_translations_count;
 		} else {
@@ -111,23 +112,26 @@ class Translation_Milestone {
 	 * @return void
 	 */
 	private function send_email_to_translator( GP_Translation $translation, int $milestone ) {
-		$user = get_userdata( $translation->user_id );
+		$user    = get_userdata( $translation->user_id );
+		$subject = sprintf(
 		// translators: Email subject.
-		$subject = sprintf( esc_html__( 'Your have reached a new translation milestone: %d translations', 'wporg-gp-engagement' ), $milestone );
+			esc_html__( 'Thank you for contributing %s translations! 🏆', 'wporg-gp-engagement' ),
+			number_format_i18n( $milestone )
+		);
 		$message = sprintf(
-		// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.
+		// translators: Email body. %1$s: Display name. %2$s: Number of translations achieved.
 			'
-Congratulations %1$s,
+Dear %1$s,
 <br><br>
-You have reached a new milestone: %2$d translations at translate.wordpress.org! 🎉
-<br>
-Thank you for your contributions to the WordPress community. Keep up the good work!
+we have noticed that you have been contributing translations to translate.wordpress.org, thank you so much for that!
 <br><br>
-Have a nice day
+It turns out, today you contributed your %2$sth translation! This is amazing! Congratulations for reaching this milestone!
+<br><br>
+Thank you so much and looking forward to you reaching the next milestone,
 <br><br>
 The Global Polyglots Team',
 			$user->display_name,
-			$milestone
+			number_format_i18n( $milestone )
 		);
 
 		$allowed_html = array(
@@ -135,6 +139,10 @@ The Global Polyglots Team',
 		);
 
 		$message = wp_kses( $message, $allowed_html );
+
+		$random_sentence = new Random_Sentence();
+		$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
+		$message        .= $random_sentence->random_string();
 
 		$email = new Notification();
 		$email->send_email( $user, $subject, $message );
