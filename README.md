@@ -15,7 +15,7 @@ is approved.
 Sends an email notification to a translator when she achieves a milestone:
 a number of approved translations.
 
-![image](https://github.com/user-attachments/assets/85fe555c-3f8a-41f8-bfd2-c6a95f237adf)
+![image](https://github.com/user-attachments/assets/4ca40c3e-d1eb-4571-8189-695029a2f079)
 
 ## Translation anniversary
 
