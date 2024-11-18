@@ -112,7 +112,7 @@ class Reengagement_First_Translation {
 			return;
 		}
 
-		list( $user, $project_name, $project_pending_count, $project_url, $project_pending_strings_url, $locale) = $notification_elements;
+		list( $user, $project_name, $project_pending_count, $project_url, $project_pending_strings_url, $locale, $translation_url) = $notification_elements;
 
 		// translators: Email subject.
 		$subject = __( 'Your first translation has been approved!🎉', 'wporg-gp-engagement' );
@@ -190,7 +190,7 @@ The Global Polyglots Team',
 		if ( false === $notification_elements ) {
 			return;
 		}
-		list( $user, $translation_url, $project_url ) = $notification_elements;
+		list( $user, $project_name, $project_pending_count, $project_url, $project_pending_strings_url, $locale, $translation_url) = $notification_elements;
 
 		// translators: Slack message.
 		$message = sprintf(
@@ -270,6 +270,7 @@ The Global Polyglots Team',
 			$project_url,
 			$project_pending_strings_url,
 			$locale,
+			$translation_url,
 		);
 	}
 }
