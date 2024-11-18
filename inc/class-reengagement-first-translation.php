@@ -8,6 +8,7 @@
 namespace WordPressdotorg\GlotPress\Engagement;
 
 use GP;
+use GP_Locales;
 use GP_Translation;
 
 /**
@@ -110,25 +111,32 @@ class Reengagement_First_Translation {
 		if ( false === $notification_elements ) {
 			return;
 		}
-		list( $user, $translation_url, $project_url ) = $notification_elements;
+
+		list( $user, $project_name, $project_pending_count, $project_url, $project_pending_strings_url, $locale) = $notification_elements;
 
 		// translators: Email subject.
-		$subject = __( 'Your first translation has been approved!', 'wporg-gp-engagement' );
+		$subject = __( 'Your first translation has been approved!🎉', 'wporg-gp-engagement' );
+
 		$message = sprintf(
-		// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.
-			'
-Congratulations %1$s,
+			// translators: %1$s: Display name. %2$s: Project URL. %3$s: Project name. %4$s: Translation date. %5$s: Locale (english name). %6$s: Pending strings URL. %7$d: Number of strings.
+			'Dear %1$s,
 <br><br>
-Your <a href="%2$s" target="_blank">first translation</a> at WordPress.org,
-included in <a href="%3$s" target="_blank">this project</a>, has been approved. Keep up the great work!
+Thank you so much for contributing to the <a href="%2$s">%3$s</a> project on %4$s!
 <br><br>
-Have a nice day
+Now, we’re happy to report that your translation has been approved and thus will be soon made available to the users of WordPress in %5$s!
 <br><br>
-The Global Polyglots Team
-',
+Would you be willing to help translate more? At the time of this e-mail, there are <a href="%6$s">%7$d strings waiting</a> for translation. Thank you!
+<br><br>
+Keep up the great work,
+<br><br>
+The Global Polyglots Team',
 			$user->display_name,
-			$translation_url,
-			$project_url
+			$project_url,
+			$project_name,
+			gmdate( 'F j, Y', strtotime( $translation->date_added ) ),
+			$locale->english_name,
+			$project_pending_strings_url,
+			$project_pending_count
 		);
 
 		$allowed_html = array(
@@ -140,6 +148,10 @@ The Global Polyglots Team
 		);
 
 		$message = wp_kses( $message, $allowed_html );
+
+		$random_sentence = new Random_Sentence();
+		$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
+		$message        .= $random_sentence->random_string();
 
 		$notification = new Notification();
 		$notification->send_email( $user, $subject, $message );
@@ -185,6 +197,12 @@ The Global Polyglots Team
 	/**
 	 * Get the elements for the notification.
 	 *
+	 * $user,
+	 * $project,
+	 * $locale,
+	 * $project_url,
+	 * $pending_strings_url
+	 *
 	 * @param GP_Translation $translation The translation.
 	 *
 	 * @return array|false
@@ -204,19 +222,33 @@ The Global Polyglots Team
 		if ( ! $project ) {
 			return false;
 		}
+		if ( ! $project->active ) {
+			return false;
+		}
+
+		if ( 'Development (trunk)' === $project->name || 'Stable (latest release)' === $project->name || 'Development Readme (trunk)' === $project->name || 'Stable Readme (latest release)' === $project->name ) {
+			$project_name = GP::$project->get( $project->parent_project_id )->name;
+		} else {
+			$project_name = $project->name;
+		}
 
 		$translation_set = GP::$translation_set->get( $translation->translation_set_id );
 		if ( ! $translation_set ) {
 			return false;
 		}
+		$project_pending_count = $translation_set->untranslated_count();
 
-		$translation_url = gp_url_join( gp_url_public_root(), 'projects', $project->path, $translation_set->locale, '/', $translation_set->slug ) . '?filters%5Bstatus%5D=either&filters%5Boriginal_id%5D=' . $original->id . '&filters%5Btranslation_id%5D=' . $translation->id;
-		$project_url     = gp_url_join( gp_url_public_root(), 'projects', $project->path, $translation_set->locale, '/', $translation_set->slug );
-
+		$translation_url             = gp_url_join( gp_url_public_root(), 'projects', $project->path, $translation_set->locale, '/', $translation_set->slug ) . '?filters%5Bstatus%5D=either&filters%5Boriginal_id%5D=' . $original->id . '&filters%5Btranslation_id%5D=' . $translation->id;
+		$project_url                 = gp_url_join( gp_url_public_root(), 'projects', $project->path, $translation_set->locale, '/', $translation_set->slug );
+		$project_pending_strings_url = gp_url_join( gp_url_public_root(), 'projects', $project->path, $translation_set->locale, '/', $translation_set->slug ) . '?filters%5Bstatus%5D=untranslated&filters%5Bsets%5D=' . $translation_set->id;
+		$locale                      = GP_Locales::by_field( 'slug', $translation_set->locale );
 		return array(
 			$user,
-			$translation_url,
+			$project_name,
+			$project_pending_count,
 			$project_url,
+			$project_pending_strings_url,
+			$locale,
 		);
 	}
 }
