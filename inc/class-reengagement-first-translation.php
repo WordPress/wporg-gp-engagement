@@ -117,27 +117,48 @@ class Reengagement_First_Translation {
 		// translators: Email subject.
 		$subject = __( 'Your first translation has been approved!🎉', 'wporg-gp-engagement' );
 
-		$message = sprintf(
-			// translators: %1$s: Display name. %2$s: Project URL. %3$s: Project name. %4$s: Translation date. %5$s: Locale (english name). %6$s: Pending strings URL. %7$d: Number of strings.
-			'Dear %1$s,
+		if ( $project_pending_count > 0 ) {
+			$message = sprintf(
+			// translators: %1$s: Display name. %2$s: Project URL. %3$s: Project name. %4$s: Translation date. %5$s: Locale (english name). %6$s: Pending strings URL. %7$d: Number of strings. %8$s: String or strings.
+				'Dear %1$s,
 <br><br>
 Thank you so much for contributing to the <a href="%2$s">%3$s</a> project on %4$s!
 <br><br>
 Now, we’re happy to report that your translation has been approved and thus will be soon made available to the users of WordPress in %5$s!
 <br><br>
-Would you be willing to help translate more? At the time of this e-mail, there are <a href="%6$s">%7$d strings waiting</a> for translation. Thank you!
+Would you be willing to help translate more? At the time of this e-mail, there are <a href="%6$s">%7$d %8$s waiting</a> for translation. Thank you!
 <br><br>
 Keep up the great work,
 <br><br>
 The Global Polyglots Team',
-			$user->display_name,
-			$project_url,
-			$project_name,
-			gmdate( 'F j, Y', strtotime( $translation->date_added ) ),
-			$locale->english_name,
-			$project_pending_strings_url,
-			$project_pending_count
-		);
+				$user->display_name,
+				$project_url,
+				$project_name,
+				gmdate( 'F j, Y', strtotime( $translation->date_added ) ),
+				$locale->english_name,
+				$project_pending_strings_url,
+				$project_pending_count,
+				_n( 'string', 'strings', $project_pending_count, 'wporg-gp-engagement' )
+			);
+		} else {
+			$message = sprintf(
+				// translators: %1$s: Display name. %2$s: Project URL. %3$s: Project name. %4$s: Translation date. %5$s: Locale (english name).
+				'Dear %1$s,
+<br><br>
+Thank you so much for contributing to the <a href="%2$s">%3$s</a> project on %4$s!
+<br><br>
+Now, we’re happy to report that your translation has been approved and thus will be soon made available to the users of WordPress in %5$s!
+<br><br>
+Keep up the great work,
+<br><br>
+The Global Polyglots Team',
+				$user->display_name,
+				$project_url,
+				$project_name,
+				gmdate( 'F j, Y', strtotime( $translation->date_added ) ),
+				$locale->english_name,
+			);
+		}
 
 		$allowed_html = array(
 			'a'  => array(
