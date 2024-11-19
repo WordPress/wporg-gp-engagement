@@ -23,6 +23,12 @@ Sends an email notification to a translator when it is her translation anniversa
 
 ![image](https://github.com/user-attachments/assets/360934aa-0cc4-43a4-97b1-c5ca1f8ac5f3)
 
+You can send these notifications with this WP-CLI command:
+
+```
+wp wporg-translate engagement-anniversary --url=translate.wordpress.org
+```
+
 ## Inactive user
 
 Sends an email notification to a translation without activity in the last 1 year, 2 years and 3 years.
