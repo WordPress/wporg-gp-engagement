@@ -128,28 +128,30 @@ class Anniversary {
 			$years      = $interval->y;
 
 			// translators: Email subject.
-			$subject = __( 'Today is your WordPress translation anniversary!', 'wporg-gp-engagement' );
+			$subject = __( 'Happy translation anniversary! 🎂', 'wporg-gp-engagement' );
 
 			$message = sprintf(
-			// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.
+			// translators: Email body. %1$s: Display name. %2$d: number of years since the first translation. %3$d: number of translations.
 				_n(
 					'
-Happy translation anniversary %1$s 🎉,
+Dear %1$s,
 <br><br>
-Today is the day you started translating WordPress. You started %2$s year ago and you have made %3$s translations. 
+do you remember? On this day, %2$d year ago, you contributed your first translation to translate.wordpress.org.
+<br><br>
+In this %2$d year, you have contributed %3$d translations. We really appreciate it, thank you so much!
+<br><br>
 Keep up the great work!
-<br><br>
-Have a nice day
 <br><br>
 The Global Polyglots Team
 ',
 					'
-Happy translation anniversary %1$s 🎉,
+Dear %1$s,
 <br><br>
-Today is the day you started translating WordPress. You started %2$s years ago and you have made %3$s translations. 
+do you remember? On this day, %2$d years ago, you contributed your first translation to translate.wordpress.org.
+<br><br>
+In this %2$d years, you have contributed %3$d translations. We really appreciate it, thank you so much!
+<br><br>
 Keep up the great work!
-<br><br>
-Have a nice day
 <br><br>
 The Global Polyglots Team
 ',
@@ -158,7 +160,7 @@ The Global Polyglots Team
 				),
 				$user->display_name,
 				$years,
-				$number_of_translations[ $user_id ]
+				number_format_i18n( $number_of_translations[ $user_id ] )
 			);
 
 			$allowed_html = array(
@@ -166,7 +168,12 @@ The Global Polyglots Team
 			);
 
 			$message = wp_kses( $message, $allowed_html );
-			$email   = new Notification();
+
+			$random_sentence = new Random_Sentence();
+			$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
+			$message        .= $random_sentence->random_string();
+
+			$email = new Notification();
 			$email->send_email( $user, $subject, $message );
 		}
 	}
@@ -191,7 +198,7 @@ The Global Polyglots Team
 				'We have sent a new message to *%s* about his/her translation anniversary. He/she starts translating on *%s* and has made *%s* translations in current status.',
 				$user->display_name,
 				$date,
-				$number_of_translations[ $user_id ]
+				number_format_i18n( $number_of_translations[ $user_id ] )
 			);
 
 			$slack = new Notification();
