@@ -20,14 +20,11 @@ class Inactive {
 	 * @return void
 	 */
 	public function __invoke() {
-		$years_to_check = array( 1, 2, 3 );
-		foreach ( $years_to_check as $years ) {
-			$date_years_ago = ( new DateTime() )->modify( "-$years year" )->format( 'Y-m-d' );
-			$all_users      = $this->get_users_with_translation_on_date( $date_years_ago );
-			$inactive_users = $this->get_inactive_users( $all_users, $date_years_ago );
-			$this->send_email_to_translators( $inactive_users, $years );
-			$this->send_slack_notification( $inactive_users, $years );
-		}
+			$one_year_ago   = ( new DateTime() )->modify( '-1 year' )->format( 'Y-m-d' );
+			$all_users      = $this->get_users_with_translation_on_date( $one_year_ago );
+			$inactive_users = $this->get_inactive_users( $all_users, $one_year_ago );
+			$this->send_email_to_translators( $inactive_users );
+			$this->send_slack_notification( $inactive_users );
 	}
 
 	/**
@@ -73,7 +70,7 @@ class Inactive {
 	 * Get the users who have been inactive since a specific date.
 	 *
 	 * @param array|null $users An array with the user_id of users.
-	 * @param string     $date      The date to check for translations. Format 'Y-m-d'.
+	 * @param string     $date  The date to check for translations. Format 'Y-m-d'.
 	 *
 	 * @return array An array with the user_id of the users who have been inactive since the date.
 	 */
@@ -105,50 +102,43 @@ class Inactive {
 	 * Send an email to the inactive translators.
 	 *
 	 * @param array $inactive_users An array with the user_id of the inactive users.
-	 * @param int   $years          The number of years the user has been inactive.
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translators( array $inactive_users, int $years ) {
-		// Translators: Email subject. %d: Number of years the user has been inactive.
-		$subject = sprintf( _n( 'We didn\'t see you the last %d year and we miss you', 'We didn\'t see you the last %d years and we miss you', $years, 'wporg-gp-engagement' ), $years );
+	private function send_email_to_translators( array $inactive_users ) {
+		$subject = esc_html__( 'We did not see you in the last year and we miss you! ⏳', 'wporg-gp-engagement' );
 		foreach ( $inactive_users as $user_id ) {
 			$user    = get_user_by( 'id', $user_id );
 			$message = sprintf(
-			// translators: Email body. %1$s: Display name. %2$s: Translation URL. %3$s: Project URL.
-				_n(
-					'
-We miss you, %1$s,
+			// translators: Email body. %s: Display name.
+				__(
+					'We miss you, %s,
 <br><br>
-We didn\'t see you at translate.wordpress.org the last %2$d year and we miss you. We hope you can come back soon, 
-because we need your help to make WordPress available in your language for everyone. 
+we\'re writing you because you have previously contributed to translate.wordpress.org. Thank you for that!
 <br><br>
-Have a nice day
+Unfortunately, we noticed that you did not contribute in the last year and we were hoping that you might come back to translating again?
 <br><br>
-The Global Polyglots Team
-',
-					'
-We miss you, %1$s,
+We won’t bother you again on this but just wanted to check.
 <br><br>
-We didn\'t see you at translate.wordpress.org the last %2$d years and we miss you. We hope you can come back soon, 
-because we need your help to make WordPress available in your language for everyone. 
-<br><br>
-Have a nice day
+Thank you!
 <br><br>
 The Global Polyglots Team
 ',
-					$years,
 					'wporg-gp-engagement'
 				),
 				$user->display_name,
-				$years,
 			);
 
 			$allowed_html = array(
 				'br' => array(),
 			);
 
-			$message      = wp_kses( $message, $allowed_html );
+			$message = wp_kses( $message, $allowed_html );
+
+			$random_sentence = new Random_Sentence();
+			$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
+			$message        .= $random_sentence->random_string();
+
 			$notification = new Notification();
 			$notification->send_email( $user, $subject, $message );
 		}
@@ -158,11 +148,10 @@ The Global Polyglots Team
 	 * Send a Slack notification.
 	 *
 	 * @param array $inactive_users An array with the user_id of the inactive users.
-	 * @param int   $years          The number of years the user has been inactive.
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( array $inactive_users, int $years ) {
+	private function send_slack_notification( array $inactive_users ) {
 		$users = array();
 		foreach ( $inactive_users as $user_id ) {
 			$user = get_userdata( $user_id );
@@ -177,11 +166,10 @@ The Global Polyglots Team
 
 		$users_list = implode( ', ', $users );
 
-		// Translators: Slack message.
 		$message = sprintf(
-			'We have sent a new message to *%s* about the last %d years of inactivity.',
-			$users_list,
-			$years
+			// translators: Slack message. %s: List of users.
+			esc_html__( 'We have sent a new message to *%s* about the last year of inactivity.', 'wporg-gp-engagement' ),
+			$users_list
 		);
 
 		$notification = new Notification();
