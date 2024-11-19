@@ -31,9 +31,15 @@ wp wporg-translate engagement-anniversary --url=translate.wordpress.org
 
 ## Inactive user
 
-Sends an email notification to a translation without activity in the last 1 year, 2 years and 3 years.
+Sends an email notification to a translation without activity in the last year.
 
-<img src="https://github.com/user-attachments/assets/e6b829f5-a833-4beb-8bc1-426d487f611d" width="750px">
+![image](https://github.com/user-attachments/assets/3f5e8954-48d5-4877-a3e1-4684bc06f5ab)
+
+You can send these notifications with this WP-CLI command:
+
+```
+wp wporg-translate  engagement-inactive --url=translate.wordpress.org
+```
 
 ## Translation consistency
 
