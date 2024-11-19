@@ -21,7 +21,7 @@ a number of approved translations.
 
 Sends an email notification to a translator when it is her translation anniversary.
 
-<img src="https://github.com/user-attachments/assets/473028d3-9012-40c4-97b3-360874cbc516" width="750px">
+![image](https://github.com/user-attachments/assets/360934aa-0cc4-43a4-97b1-c5ca1f8ac5f3)
 
 ## Inactive user
 
