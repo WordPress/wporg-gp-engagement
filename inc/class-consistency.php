@@ -112,7 +112,7 @@ class Consistency {
 			$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );
 
 			// Translators: Email subject. %s is the number of years or months of translation consistency.
-			$subject = sprintf( __( 'Thank you for your %s of translation consistency!', 'wporg-gp-engagement' ), $time_period );
+			$subject = sprintf( __( 'Thank you for your %s of translation consistency! 🏆', 'wporg-gp-engagement' ), $time_period );
 
 			foreach ( $user_ids as $user_id ) {
 				$user = get_user_by( 'id', $user_id );
@@ -143,7 +143,12 @@ The Global Polyglots Team',
 					'br' => array(),
 				);
 
-				$message      = wp_kses( $message, $allowed_html );
+				$message = wp_kses( $message, $allowed_html );
+
+				$random_sentence = new Random_Sentence();
+				$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
+				$message        .= $random_sentence->random_string();
+
 				$notification = new Notification();
 				$notification->send_email( $user, $subject, $message );
 				$this->update_user_option( $user_id, $months );
