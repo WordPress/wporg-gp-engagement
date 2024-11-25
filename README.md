@@ -38,7 +38,7 @@ Sends an email notification to a translation without activity in the last year.
 You can send these notifications with this WP-CLI command:
 
 ```
-wp wporg-translate  engagement-inactive --url=translate.wordpress.org
+wp wporg-translate engagement-inactive --url=translate.wordpress.org
 ```
 
 ## Translation consistency
@@ -46,3 +46,9 @@ wp wporg-translate  engagement-inactive --url=translate.wordpress.org
 Sends an email notification to a translator that has been translating the last: 48, 24, 12 and 6 months.
 
 <img src="https://github.com/user-attachments/assets/ad8a3b6a-0b21-424c-9852-2e305ff28a39" width="750px">
+
+You can send these notifications with this WP-CLI command:
+
+```
+wp wporg-translate engagement-consistency --url=translate.wordpress.org
+```
