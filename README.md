@@ -45,7 +45,7 @@ wp wporg-translate engagement-inactive --url=translate.wordpress.org
 
 Sends an email notification to a translator that has been translating the last: 48, 24, 12 and 6 months.
 
-<img src="https://github.com/user-attachments/assets/ad8a3b6a-0b21-424c-9852-2e305ff28a39" width="750px">
+![image](https://github.com/user-attachments/assets/0a079765-f823-42d1-8992-ca6721092a4e)
 
 You can send these notifications with this WP-CLI command:
 
