@@ -166,7 +166,7 @@ The Global Polyglots Team',
 			number_format_i18n( $milestone ),
 		);
 
-		$slack = new Notification();
-		$slack->send_slack_notification( $message, '@amieiro' );
+		$notification = new Notification();
+		$notification->send_slack_notification( $message );
 	}
 }

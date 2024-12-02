@@ -47,7 +47,7 @@ class Plugin extends GP_Route {
 		add_action( 'init', array( $this, 'wp_schedule_crons' ) );
 		add_action( 'plugins_loaded', array( $this, 'load_cli_commands' ) );
 		add_filter( 'cron_schedules', array( $this, 'add_monthly_schedule' ) );
-		add_action( 'gp_translation_saved', array( new Reengagement_First_Translation(), '__invoke' ) );
+		add_action( 'gp_translation_saved', array( new First_Translation(), '__invoke' ) );
 		add_action( 'gp_translation_saved', array( new Translation_Milestone(), '__invoke' ) );
 		add_action( 'gp_engagement_anniversary', array( new Anniversary(), '__invoke' ) );
 		add_action( 'gp_engagement_inactive', array( new Inactive(), '__invoke' ) );

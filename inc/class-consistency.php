@@ -190,7 +190,7 @@ The Global Polyglots Team',
 			);
 
 			$notification = new Notification();
-			$notification->send_slack_notification( $message, '@amieiro' );
+			$notification->send_slack_notification( $message );
 		}
 	}
 

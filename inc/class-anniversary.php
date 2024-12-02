@@ -201,8 +201,8 @@ The Global Polyglots Team
 				number_format_i18n( $number_of_translations[ $user_id ] )
 			);
 
-			$slack = new Notification();
-			$slack->send_slack_notification( $message, '@amieiro' );
+			$notification = new Notification();
+			$notification->send_slack_notification( $message );
 		}
 	}
 }

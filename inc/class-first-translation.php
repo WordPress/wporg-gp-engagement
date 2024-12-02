@@ -14,7 +14,7 @@ use GP_Translation;
 /**
  * Sends an email to translators who for the first time had a translation approved.
  */
-class Reengagement_First_Translation {
+class First_Translation {
 	/**
 	 * Send an email to translators who for the first time today had a translation approved.
 	 *
@@ -200,8 +200,8 @@ The Global Polyglots Team',
 			$project_url
 		);
 
-		$slack = new Notification();
-		$slack->send_slack_notification( $message, '@amieiro' );
+		$notification = new Notification();
+		$notification->send_slack_notification( $message );
 	}
 
 	/**
