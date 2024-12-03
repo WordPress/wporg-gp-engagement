@@ -18,8 +18,8 @@ class Consistency_Test extends Base_Test {
 	 */
 	public function consistency_data_provider() {
 		return array(
-			'3 months' => array( 3, 3 ),
-			'6 months' => array( 6, 2 ),
+			'3 months'  => array( 3, 3 ),
+			'6 months'  => array( 6, 2 ),
 			'12 months' => array( 12, 1 ),
 		);
 	}

@@ -161,7 +161,8 @@ The Global Polyglots Team',
 	/**
 	 * Send a Slack notification about the notified users
 	 *
-	 * @param array $users_notified The users that were notify.
+	 * @param int   $months  The number of months.
+	 * @param array $user_ids The user IDs.
 	 */
 	public function send_slack_notification( int $months, array $user_ids ) {
 		$years = intdiv( $months, 12 );
