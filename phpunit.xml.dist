@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="tests">
+			<directory suffix=".php">./tests/</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<env name="WPORG_GP_ENGAGEMENT_TESTS" value="yes" force="true" />
+	</php>
+</phpunit>

@@ -52,6 +52,10 @@ class Plugin extends GP_Route {
 		add_action( 'gp_engagement_anniversary', array( new Anniversary(), '__invoke' ) );
 		add_action( 'gp_engagement_inactive', array( new Inactive(), '__invoke' ) );
 		add_action( 'gp_engagement_consistency', array( new Consistency(), '__invoke' ) );
+
+		$notification = new Notification();
+		add_action( 'wporg_translate_notification_email', array( $notification, 'send_email' ) );
+		add_action( 'wporg_translate_notification_slack', array( $notification, 'send_slack_notification' ) );
 	}
 
 	/**
@@ -107,5 +111,10 @@ class Plugin extends GP_Route {
 			$timestamp = strtotime( 'first day of next month' );
 			wp_schedule_event( $timestamp, 'monthly', 'gp_engagement_consistency' );
 		}
+	}
+
+	public function send_notification_email( $user, $subject, $message ) {
+		$email = new Notification();
+		$email->send_email( $user, $subject, $message );
 	}
 }

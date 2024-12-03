@@ -34,6 +34,11 @@ class Translation_Milestone {
 		1000000,
 	);
 
+	public function __construct() {
+		add_action( 'wporg_translate_notification_milestone', array( $this, 'send_email_to_translator' ) );
+		add_action( 'wporg_translate_notification_summary_milestone', array( $this, 'send_slack_notification' ) );
+	}
+
 	/**
 	 * Send an email to translators who reached a translation milestone.
 	 *
@@ -49,8 +54,8 @@ class Translation_Milestone {
 		if ( ! $milestone ) {
 			return;
 		}
-		$this->send_email_to_translator( $translation, $milestone );
-		$this->send_slack_notification( $translation, $milestone );
+		do_action( 'wporg_translate_notification_milestone', $translation, $milestone );
+		do_action( 'wporg_translate_notification_summary_milestone', $translation, $milestone );
 	}
 
 		/**
@@ -140,12 +145,7 @@ The Global Polyglots Team',
 
 		$message = wp_kses( $message, $allowed_html );
 
-		$random_sentence = new Random_Sentence();
-		$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
-		$message        .= $random_sentence->random_string();
-
-		$email = new Notification();
-		$email->send_email( $user, $subject, $message );
+		do_action( 'wporg_translate_notification_email', $user, $subject, $message );
 	}
 
 	/**
@@ -166,7 +166,6 @@ The Global Polyglots Team',
 			number_format_i18n( $milestone ),
 		);
 
-		$notification = new Notification();
-		$notification->send_slack_notification( $message );
+		do_action( 'wporg_translate_notification_slack', $message );
 	}
 }

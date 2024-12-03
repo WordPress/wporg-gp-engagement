@@ -13,6 +13,11 @@ use WP_CLI;
  * Sends an email to translators in their translation anniversary.
  */
 class Anniversary {
+	public function __construct() {
+		add_action( 'wporg_translate_notification_anniversary', array( $this, 'send_email_to_translator' ) );
+		add_action( 'wporg_translate_notification_summary_anniversary', array( $this, 'send_slack_notification' ) );
+	}
+
 	/**
 	 * Send an email to translators in their translation anniversary.
 	 *
@@ -21,9 +26,13 @@ class Anniversary {
 	public function __invoke() {
 		$all_users              = $this->get_users_and_first_translation_date();
 		$anniversary_users      = $this->get_translators_in_anniversary( $all_users );
-		$number_of_translations = $this->get_number_of_translations( $anniversary_users );
-		$this->send_email_to_translator( $anniversary_users, $number_of_translations );
-		$this->send_slack_notification( $anniversary_users, $number_of_translations );
+		$number_of_translations = array();
+		foreach ( $anniversary_users as $user_id => $date ) {
+			$number_of_translations[ $user_id ] = $this->get_number_of_translations( $user_id );
+			do_action( 'wporg_translate_notification_anniversary', $user_id, $date, $number_of_translations[ $user_id ] );
+		}
+
+		do_action( 'wporg_translate_notification_summary_anniversary', $anniversary_users, $number_of_translations );
 	}
 
 	/**
@@ -88,51 +97,45 @@ class Anniversary {
 	/**
 	 * Get the number of translations for each user.
 	 *
-	 * @param array|null $users An array with the user_id as key and the date of the first translation as value.
+	 * @param int $user_id The user_id.
 	 *
 	 * @return array An array with the user_id as key and the number of translations as value.
 	 */
-	private function get_number_of_translations( ?array $users ): array {
-		$number_of_translations = array();
+	private function get_number_of_translations( int $user_id ): array {
 		global $wpdb;
-		foreach ( $users as $user_id => $date ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-			$number_of_translations[ $user_id ] = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(id)
-					FROM translate_translations
-					WHERE user_id = %d
-					AND status = 'current'",
-					$user_id
-				)
-			);
-		}
-
-		return $number_of_translations;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(id)
+				FROM translate_translations
+				WHERE user_id = %d
+				AND status = 'current'",
+				$user_id
+			)
+		);
 	}
 
 	/**
 	 * Send an email to the translators.
 	 *
-	 * @param array|null $anniversary_users      The user_id (key) that have an anniversary and their start date (value. Y-m-d format).
-	 * @param array|null $number_of_translations The number of translations for each user as value. The user_id is the key.
+	 * @param int $anniversary_users      The user_id (key) that have an anniversary and their start date (value. Y-m-d format).
+	 * @param int $number_of_translations The number of translations for each user as value. The user_id is the key.
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translator( ?array $anniversary_users, ?array $number_of_translations ) {
-		foreach ( $anniversary_users as $user_id => $date ) {
-			$user       = get_userdata( $user_id );
-			$start_date = new \DateTime( $date );
-			$today      = new \DateTime();
-			$interval   = $start_date->diff( $today );
-			$years      = $interval->y;
+	private function send_email_to_translator( int $user_id, string $date, int $number_of_translations ) {
+		$user       = get_userdata( $user_id );
+		$start_date = new \DateTime( $date );
+		$today      = new \DateTime();
+		$interval   = $start_date->diff( $today );
+		$years      = $interval->y;
 
-			// translators: Email subject.
-			$subject = __( 'Happy translation anniversary! 🎂', 'wporg-gp-engagement' );
+		// translators: Email subject.
+		$subject = __( 'Happy translation anniversary! 🎂', 'wporg-gp-engagement' );
 
-			$message = sprintf(
-			// translators: Email body. %1$s: Display name. %2$d: number of years since the first translation. %3$d: number of translations.
-				_n(
+		$message = sprintf(
+		// translators: Email body. %1$s: Display name. %2$d: number of years since the first translation. %3$d: number of translations.
+			_n(
 					'
 Dear %1$s,
 <br><br>
@@ -155,27 +158,21 @@ Keep up the great work!
 <br><br>
 The Global Polyglots Team
 ',
-					$years,
-					'wporg-gp-engagement'
-				),
-				$user->display_name,
 				$years,
-				number_format_i18n( $number_of_translations[ $user_id ] )
-			);
+				'wporg-gp-engagement'
+			),
+			$user->display_name,
+			$years,
+			number_format_i18n( $number_of_translations )
+		);
 
-			$allowed_html = array(
-				'br' => array(),
-			);
+		$allowed_html = array(
+			'br' => array(),
+		);
 
-			$message = wp_kses( $message, $allowed_html );
+		$message = wp_kses( $message, $allowed_html );
 
-			$random_sentence = new Random_Sentence();
-			$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
-			$message        .= $random_sentence->random_string();
-
-			$email = new Notification();
-			$email->send_email( $user, $subject, $message );
-		}
+		do_action( 'wporg_translate_notification_email', $user, $subject, $message );
 	}
 
 	/**
@@ -201,8 +198,7 @@ The Global Polyglots Team
 				number_format_i18n( $number_of_translations[ $user_id ] )
 			);
 
-			$notification = new Notification();
-			$notification->send_slack_notification( $message );
+			do_action( 'wporg_translate_notification_slack', $message );
 		}
 	}
 }

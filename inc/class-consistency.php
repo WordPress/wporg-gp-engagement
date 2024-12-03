@@ -18,6 +18,12 @@ class Consistency {
 	 * @var array
 	 */
 	private array $months_to_notify = array( 48, 24, 12, 6 );
+
+	public function __construct() {
+		add_action( 'wporg_translate_notification_consistency', array( $this, 'send_email_to_translator' ) );
+		add_action( 'wporg_translate_notification_summary_consistency', array( $this, 'send_slack_notification' ) );
+	}
+
 	/**
 	 * Send an email to translators in their translation anniversary.
 	 *
@@ -25,8 +31,12 @@ class Consistency {
 	 */
 	public function __invoke() {
 		$users_to_notify = $this->get_users_to_notify();
-		$this->send_email_to_translators( $users_to_notify );
-		$this->send_slack_notifications( $users_to_notify );
+		foreach ( $users_to_notify as $months => $user_ids ) {
+			foreach ( $user_ids as $user_id ) {
+				do_action( 'wporg_translate_notification_consistency', $months, $user_id );
+			}
+		}
+		do_action( 'wporg_translate_notification_summary_consistency', $users_to_notify );
 	}
 
 	/**
@@ -105,55 +115,46 @@ class Consistency {
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translators( array $users_to_notify ): void {
-		foreach ( $users_to_notify as $months => $user_ids ) {
-			$years = intdiv( $months, 12 );
-			// Translators: Number of years or months of translation consistency, to be used in the email subject.
-			$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );
+	private function send_email_to_translators( $months, $user_id ): void {
+		$years = intdiv( $months, 12 );
+		// Translators: Number of years or months of translation consistency, to be used in the email subject.
+		$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );
 
-			// Translators: Email subject. %s is the number of years or months of translation consistency.
-			$subject = sprintf( __( 'Thank you for your %s of translation consistency! 🏆', 'wporg-gp-engagement' ), $time_period );
+		// Translators: Email subject. %s is the number of years or months of translation consistency.
+		$subject = sprintf( __( 'Thank you for your %s of translation consistency! 🏆', 'wporg-gp-engagement' ), $time_period );
 
-			foreach ( $user_ids as $user_id ) {
-				$user = get_user_by( 'id', $user_id );
-				if ( ! $user ) {
-					continue;
-				}
+		$user = get_user_by( 'id', $user_id );
+		if ( ! $user ) {
+			return;
+		}
 
-				if ( $this->has_the_notification_been_sent( $user_id, $months ) ) {
-					continue;
-				}
+		if ( $this->has_the_notification_been_sent( $user_id, $months ) ) {
+			return;
+		}
 
-				$message = sprintf(
-					// Translators: Email message. %1$s is the user display name, %2$s is the number of years or months of translation consistency.
-					__(
-						'Dear %1$s,<br><br>Thank you for your %2$s of consistent translations at translate.wordpress.org. 
+		$message = sprintf(
+			// Translators: Email message. %1$s is the user display name, %2$s is the number of years or months of translation consistency.
+			__(
+				'Dear %1$s,<br><br>Thank you for your %2$s of consistent translations at translate.wordpress.org.
 Your contributions are invaluable in making WordPress available in multiple languages.
 <br><br>
 Best regards,
 <br><br>
 The Global Polyglots Team',
-						'wporg-gp-engagement'
-					),
-					$user->display_name,
-					$time_period
-				);
+				'wporg-gp-engagement'
+			),
+			$user->display_name,
+			$time_period
+		);
 
-				$allowed_html = array(
-					'br' => array(),
-				);
+		$allowed_html = array(
+			'br' => array(),
+		);
 
-				$message = wp_kses( $message, $allowed_html );
+		$message = wp_kses( $message, $allowed_html );
 
-				$random_sentence = new Random_Sentence();
-				$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
-				$message        .= $random_sentence->random_string();
-
-				$notification = new Notification();
-				$notification->send_email( $user, $subject, $message );
-				$this->update_user_option( $user_id, $months );
-			}
-		}
+		do_action( 'wporg_translate_notification_email', $user, $subject, $message );
+		$this->update_user_option( $user_id, $months );
 	}
 
 	/**
@@ -189,8 +190,7 @@ The Global Polyglots Team',
 				$time_period
 			);
 
-			$notification = new Notification();
-			$notification->send_slack_notification( $message );
+			do_action( 'wporg_translate_notification_slack', $message );
 		}
 	}
 
