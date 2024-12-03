@@ -5,10 +5,10 @@
  * @package wporg-gp-engagement
  */
 
-namespace WordPressdotorg\GlotPress\Engagement;
+namespace Wporg\Tests;
 
 /**
  * Test the Translation_Milestone class.
  */
-class Translation_Milestone_Test {
+class Translation_Milestone_Test extends Base_Test {
 }
