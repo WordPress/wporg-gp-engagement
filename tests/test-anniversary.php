@@ -39,8 +39,8 @@ class Anniversary_Test extends Base_Test {
 
 		$translation = $this->factory->translation->create(
 			array(
-				'status'                => 'current',
-				'user_id'               => $user,
+				'status'  => 'current',
+				'user_id' => $user,
 			)
 		);
 		$translation->update( array( 'date_added' => gmdate( 'Y-m-d H:i:s', $date ) ) );
