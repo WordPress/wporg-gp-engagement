@@ -40,13 +40,9 @@ class Anniversary_Test extends Base_Test {
 		$translation = $this->factory->translation->create(
 			array(
 				'status'                => 'current',
-				'locale'                => 'en',
-				'translation_set_id'    => 1,
 				'user_id'               => $user,
-				'user_id_last_modified' => $user,
 			)
 		);
-
 		$translation->update( array( 'date_added' => gmdate( 'Y-m-d H:i:s', $date ) ) );
 
 		$anniversary = new \WordPressdotorg\GlotPress\Engagement\Anniversary();
