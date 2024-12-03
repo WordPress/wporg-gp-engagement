@@ -5,12 +5,12 @@
  * @package wporg-gp-engagement
  */
 
-namespace WordPressdotorg\GlotPress\Engagement;
+namespace Wporg\Tests;
 
 /**
  * Test the Anniversary class.
  */
-class Anniversary_Test extends \GP_UnitTestCase {
+class Anniversary_Test extends Base_Test {
 	/**
 	 * Data provider for the anniversary tests.
 	 *
@@ -49,13 +49,13 @@ class Anniversary_Test extends \GP_UnitTestCase {
 
 		$translation->update( array( 'date_added' => gmdate( 'Y-m-d H:i:s', $date ) ) );
 
-		remove_all_actions( 'wporg_translate_notification_milestone' );
-		remove_all_actions( 'wporg_translate_notification_summary_milestone' );
+		$anniversary = new \WordPressdotorg\GlotPress\Engagement\Anniversary();
+		remove_all_actions( 'wporg_translate_notification_anniversary' );
+		remove_all_actions( 'wporg_translate_notification_summary_anniversary' );
 
 		$mock = new \MockAction();
 		add_action( 'wporg_translate_notification_anniversary', array( $mock, 'action' ), 10, 2 );
 
-		$anniversary = new Anniversary();
 		$anniversary();
 
 		$this->assertEquals( $expected, $mock->get_call_count() );

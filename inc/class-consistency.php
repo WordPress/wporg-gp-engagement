@@ -17,14 +17,14 @@ class Consistency {
 	 *
 	 * @var array
 	 */
-	private array $months_to_notify = array( 48, 24, 12, 6 );
+	public array $months_to_notify = array( 48, 24, 12, 6 );
 
 	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		add_action( 'wporg_translate_notification_consistency', array( $this, 'send_email_to_translator' ), 10, 2 );
-		add_action( 'wporg_translate_notification_summary_consistency', array( $this, 'send_slack_notification' ) );
+		add_action( 'wporg_translate_notification_consistency', array( $this, 'send_email_to_translators' ), 10, 2 );
+		add_action( 'wporg_translate_notification_summary_consistency', array( $this, 'send_slack_notification' ), 10, 2 );
 	}
 
 	/**
@@ -38,8 +38,10 @@ class Consistency {
 			foreach ( $user_ids as $user_id ) {
 				do_action( 'wporg_translate_notification_consistency', $months, $user_id );
 			}
+			if ( $user_ids ) {
+				do_action( 'wporg_translate_notification_summary_consistency', $months, $user_ids );
+			}
 		}
-		do_action( 'wporg_translate_notification_summary_consistency', $users_to_notify );
 	}
 
 	/**
@@ -101,11 +103,6 @@ class Consistency {
 			} else {
 				$user_ids = array_intersect( $user_ids, $month_user_ids );
 			}
-
-			// If no users are found in any month, return an empty array.
-			if ( empty( $user_ids ) ) {
-				return array();
-			}
 		}
 
 		return array_values( $user_ids );
@@ -166,36 +163,34 @@ The Global Polyglots Team',
 	 *
 	 * @param array $users_notified The users that were notify.
 	 */
-	public function send_slack_notifications( array $users_notified ) {
-		foreach ( $users_notified as $months => $user_ids ) {
-			$years = intdiv( $months, 12 );
-			// Translators: Number of years or months of translation consistency, to be used in the Slack message.
-			$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );
+	public function send_slack_notification( int $months, array $user_ids ) {
+		$years = intdiv( $months, 12 );
+		// Translators: Number of years or months of translation consistency, to be used in the Slack message.
+		$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );
 
-			$users = array();
-			foreach ( $user_ids as $user_id ) {
-				$user = get_userdata( $user_id );
-				if ( ! $user ) {
-					continue;
-				}
-				$users[] = $user->display_name;
-			}
-
-			if ( empty( $users ) ) {
+		$users = array();
+		foreach ( $user_ids as $user_id ) {
+			$user = get_userdata( $user_id );
+			if ( ! $user ) {
 				continue;
 			}
-
-			$users_list = implode( ', ', $users );
-
-			// Translators: Slack message.
-			$message = sprintf(
-				'We have sent a thank you message to *%s* for their %s of translation consistency.',
-				$users_list,
-				$time_period
-			);
-
-			do_action( 'wporg_translate_notification_slack', $message );
+			$users[] = $user->display_name;
 		}
+
+		if ( empty( $users ) ) {
+			return;
+		}
+
+		$users_list = implode( ', ', $users );
+
+		// Translators: Slack message.
+		$message = sprintf(
+			'We have sent a thank you message to *%s* for their %s of translation consistency.',
+			$users_list,
+			$time_period
+		);
+
+		do_action( 'wporg_translate_notification_slack', $message );
 	}
 
 	/**
