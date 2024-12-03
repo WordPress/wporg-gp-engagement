@@ -51,7 +51,7 @@ class Anniversary {
 		$max_user_id = $wpdb->get_var( "SELECT MAX(user_id) FROM {$wpdb->gp_translations}" );
 
 		// Todo: change to 1.
-		$first_id   = 21_000_000;
+		$first_id   = 1;
 		$batch_size = 50_000;
 
 		do {
