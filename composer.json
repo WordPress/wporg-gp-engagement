@@ -18,10 +18,13 @@
   "require-dev" : {
     "squizlabs/php_codesniffer": "^3.6",
     "friendsofphp/php-cs-fixer": "^3.0",
+    "phpunit/phpunit": "^9.6.16",
+    "yoast/phpunit-polyfills": "^2.0.0",
     "wp-coding-standards/wpcs": "^3.0"
   },
   "scripts": {
-    "lint": "phpcs --extensions=php -s -p",
-    "format": "phpcbf -p"
+    "lint": "phpcs --standard=phpcs.xml -s",
+    "format": "phpcbf --standard=phpcs.xml",
+    "test": "phpunit"
   }
 }

@@ -15,16 +15,26 @@ use WP_CLI;
  */
 class Inactive {
 	/**
-	 * Send an email to translators who have been inactive in the last years.
-	 *
-	 * @return void
+	 * Constructor.
 	 */
+	public function __construct() {
+		add_action( 'wporg_translate_notification_inactive', array( $this, 'send_email_to_translator' ) );
+		add_action( 'wporg_translate_notification_summary_inactive', array( $this, 'send_slack_notification' ) );
+	}
+		/**
+		 * Send an email to translators who have been inactive in the last years.
+		 *
+		 * @return void
+		 */
 	public function __invoke() {
 			$one_year_ago   = ( new DateTime() )->modify( '-1 year' )->format( 'Y-m-d' );
 			$all_users      = $this->get_users_with_translation_on_date( $one_year_ago );
 			$inactive_users = $this->get_inactive_users( $all_users, $one_year_ago );
-			$this->send_email_to_translators( $inactive_users );
-			$this->send_slack_notification( $inactive_users );
+		foreach ( $inactive_users as $user_id ) {
+			do_action( 'wporg_translate_notification_inactive', $user_id );
+		}
+
+			do_action( 'wporg_translate_notification_summary_inactive', $inactive_users );
 	}
 
 	/**
@@ -101,18 +111,17 @@ class Inactive {
 	/**
 	 * Send an email to the inactive translators.
 	 *
-	 * @param array $inactive_users An array with the user_id of the inactive users.
+	 * @param int $user_id The user_id of the inactive users.
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translators( array $inactive_users ) {
+	public function send_email_to_translators( int $user_id ) {
 		$subject = esc_html__( 'We did not see you in the last year and we miss you! ⏳', 'wporg-gp-engagement' );
-		foreach ( $inactive_users as $user_id ) {
-			$user    = get_user_by( 'id', $user_id );
-			$message = sprintf(
-			// translators: Email body. %s: Display name.
-				__(
-					'We miss you, %s,
+		$user    = get_user_by( 'id', $user_id );
+		$message = sprintf(
+		// translators: Email body. %s: Display name.
+			__(
+				'We miss you, %s,
 <br><br>
 we\'re writing you because you have previously contributed to translate.wordpress.org. Thank you for that!
 <br><br>
@@ -124,24 +133,18 @@ Thank you!
 <br><br>
 The Global Polyglots Team
 ',
-					'wporg-gp-engagement'
-				),
-				$user->display_name,
-			);
+				'wporg-gp-engagement'
+			),
+			$user->display_name,
+		);
 
-			$allowed_html = array(
-				'br' => array(),
-			);
+		$allowed_html = array(
+			'br' => array(),
+		);
 
-			$message = wp_kses( $message, $allowed_html );
+		$message = wp_kses( $message, $allowed_html );
 
-			$random_sentence = new Random_Sentence();
-			$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
-			$message        .= $random_sentence->random_string();
-
-			$notification = new Notification();
-			$notification->send_email( $user, $subject, $message );
-		}
+		do_action( 'wporg_translate_notification_slack', $message );
 	}
 
 	/**
@@ -151,7 +154,7 @@ The Global Polyglots Team
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( array $inactive_users ) {
+	public function send_slack_notification( array $inactive_users ) {
 		$users = array();
 		foreach ( $inactive_users as $user_id ) {
 			$user = get_userdata( $user_id );
@@ -172,7 +175,6 @@ The Global Polyglots Team
 			$users_list
 		);
 
-		$notification = new Notification();
-		$notification->send_slack_notification( $message );
+		do_action( 'wporg_translate_notification_slack', $message );
 	}
 }

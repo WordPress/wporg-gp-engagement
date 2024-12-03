@@ -35,6 +35,14 @@ class Translation_Milestone {
 	);
 
 	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		add_action( 'wporg_translate_notification_milestone', array( $this, 'send_email_to_translator' ), 10, 2 );
+		add_action( 'wporg_translate_notification_summary_milestone', array( $this, 'send_slack_notification' ), 10, 2 );
+	}
+
+	/**
 	 * Send an email to translators who reached a translation milestone.
 	 *
 	 * @param GP_Translation|null $translation The translation that was saved.
@@ -49,8 +57,8 @@ class Translation_Milestone {
 		if ( ! $milestone ) {
 			return;
 		}
-		$this->send_email_to_translator( $translation, $milestone );
-		$this->send_slack_notification( $translation, $milestone );
+		do_action( 'wporg_translate_notification_milestone', $translation, $milestone );
+		do_action( 'wporg_translate_notification_summary_milestone', $translation, $milestone );
 	}
 
 		/**
@@ -111,7 +119,7 @@ class Translation_Milestone {
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translator( GP_Translation $translation, int $milestone ) {
+	public function send_email_to_translator( GP_Translation $translation, int $milestone ) {
 		$user    = get_userdata( $translation->user_id );
 		$subject = sprintf(
 		// translators: Email subject.
@@ -140,12 +148,7 @@ The Global Polyglots Team',
 
 		$message = wp_kses( $message, $allowed_html );
 
-		$random_sentence = new Random_Sentence();
-		$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
-		$message        .= $random_sentence->random_string();
-
-		$email = new Notification();
-		$email->send_email( $user, $subject, $message );
+		do_action( 'wporg_translate_notification_email', $user, $subject, $message );
 	}
 
 	/**
@@ -156,7 +159,7 @@ The Global Polyglots Team',
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( GP_Translation $translation, int $milestone ) {
+	public function send_slack_notification( GP_Translation $translation, int $milestone ) {
 		$user = get_userdata( $translation->user_id );
 
 		// translators: Slack message. %s: Display name. %d: Milestone.
@@ -166,7 +169,6 @@ The Global Polyglots Team',
 			number_format_i18n( $milestone ),
 		);
 
-		$notification = new Notification();
-		$notification->send_slack_notification( $message );
+		do_action( 'wporg_translate_notification_slack', $message );
 	}
 }
