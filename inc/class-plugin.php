@@ -54,7 +54,7 @@ class Plugin extends GP_Route {
 		add_action( 'gp_engagement_consistency', array( new Consistency(), '__invoke' ) );
 
 		$notification = new Notification();
-		add_action( 'wporg_translate_notification_email', array( $notification, 'send_email' ) );
+		add_action( 'wporg_translate_notification_email', array( $notification, 'send_email' ), 10, 3 );
 		add_action( 'wporg_translate_notification_slack', array( $notification, 'send_slack_notification' ) );
 	}
 

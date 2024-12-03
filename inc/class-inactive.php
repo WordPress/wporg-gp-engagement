@@ -112,7 +112,7 @@ class Inactive {
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translators( int $user_id ) {
+	public function send_email_to_translators( int $user_id ) {
 		$subject = esc_html__( 'We did not see you in the last year and we miss you! ⏳', 'wporg-gp-engagement' );
 		$user    = get_user_by( 'id', $user_id );
 		$message = sprintf(
@@ -151,7 +151,7 @@ The Global Polyglots Team
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( array $inactive_users ) {
+	public function send_slack_notification( array $inactive_users ) {
 		$users = array();
 		foreach ( $inactive_users as $user_id ) {
 			$user = get_userdata( $user_id );

@@ -14,8 +14,8 @@ use WP_CLI;
  */
 class Anniversary {
 	public function __construct() {
-		add_action( 'wporg_translate_notification_anniversary', array( $this, 'send_email_to_translator' ) );
-		add_action( 'wporg_translate_notification_summary_anniversary', array( $this, 'send_slack_notification' ) );
+		add_action( 'wporg_translate_notification_anniversary', array( $this, 'send_email_to_translator' ), 10, 3 );
+		add_action( 'wporg_translate_notification_summary_anniversary', array( $this, 'send_slack_notification' ), 10, 2 );
 	}
 
 	/**
@@ -45,10 +45,10 @@ class Anniversary {
 		$users = array();
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$max_user_id = $wpdb->get_var( 'SELECT MAX(user_id) FROM translate_translations' );
+		$max_user_id = $wpdb->get_var( "SELECT MAX(user_id) FROM {$wpdb->gp_translations}" );
 
 		// Todo: change to 1.
-		$first_id   = 21_000_000;
+		$first_id   = 1;
 		$batch_size = 50_000;
 
 		do {
@@ -101,16 +101,18 @@ class Anniversary {
 	 *
 	 * @return array An array with the user_id as key and the number of translations as value.
 	 */
-	private function get_number_of_translations( int $user_id ): array {
+	private function get_number_of_translations( int $user_id ): int {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		return $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(id)
-				FROM translate_translations
-				WHERE user_id = %d
-				AND status = 'current'",
-				$user_id
+		return intval(
+			$wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(id)
+					FROM {$wpdb->gp_translations}
+					WHERE user_id = %d
+					AND status = 'current'",
+					$user_id
+				)
 			)
 		);
 	}
@@ -118,12 +120,13 @@ class Anniversary {
 	/**
 	 * Send an email to the translators.
 	 *
-	 * @param int $anniversary_users      The user_id (key) that have an anniversary and their start date (value. Y-m-d format).
-	 * @param int $number_of_translations The number of translations for each user as value. The user_id is the key.
+	 * @param int $user_id      The user_id of the anniversary user.
+	 * @param string $date      The user's first translation date (Y-m-d format).
+	 * @param int $number_of_translations The number of translations made so far.
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translator( int $user_id, string $date, int $number_of_translations ) {
+	public function send_email_to_translator( int $user_id, string $date, int $number_of_translations ) {
 		$user       = get_userdata( $user_id );
 		$start_date = new \DateTime( $date );
 		$today      = new \DateTime();
@@ -183,7 +186,7 @@ The Global Polyglots Team
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( ?array $anniversary_users, ?array $number_of_translations ) {
+	public function send_slack_notification( ?array $anniversary_users, ?array $number_of_translations ) {
 		if ( ! $anniversary_users ) {
 			return;
 		}

@@ -112,7 +112,7 @@ class First_Translation {
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translator( GP_Translation $translation ) {
+	public function send_email_to_translator( GP_Translation $translation ) {
 		$notification_elements = $this->get_notification_elements( $translation );
 		if ( false === $notification_elements ) {
 			return;
@@ -186,7 +186,7 @@ The Global Polyglots Team',
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( GP_Translation $translation ) {
+	public function send_slack_notification( GP_Translation $translation ) {
 		$notification_elements = $this->get_notification_elements( $translation );
 		if ( false === $notification_elements ) {
 			return;

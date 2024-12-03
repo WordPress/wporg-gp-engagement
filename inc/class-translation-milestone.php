@@ -35,8 +35,8 @@ class Translation_Milestone {
 	);
 
 	public function __construct() {
-		add_action( 'wporg_translate_notification_milestone', array( $this, 'send_email_to_translator' ) );
-		add_action( 'wporg_translate_notification_summary_milestone', array( $this, 'send_slack_notification' ) );
+		add_action( 'wporg_translate_notification_milestone', array( $this, 'send_email_to_translator' ), 10, 2 );
+		add_action( 'wporg_translate_notification_summary_milestone', array( $this, 'send_slack_notification' ), 10, 2 );
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Translation_Milestone {
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translator( GP_Translation $translation, int $milestone ) {
+	public function send_email_to_translator( GP_Translation $translation, int $milestone ) {
 		$user    = get_userdata( $translation->user_id );
 		$subject = sprintf(
 		// translators: Email subject.
@@ -156,7 +156,7 @@ The Global Polyglots Team',
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( GP_Translation $translation, int $milestone ) {
+	public function send_slack_notification( GP_Translation $translation, int $milestone ) {
 		$user = get_userdata( $translation->user_id );
 
 		// translators: Slack message. %s: Display name. %d: Milestone.
