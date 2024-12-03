@@ -19,6 +19,9 @@ class Consistency {
 	 */
 	private array $months_to_notify = array( 48, 24, 12, 6 );
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'wporg_translate_notification_consistency', array( $this, 'send_email_to_translator' ), 10, 2 );
 		add_action( 'wporg_translate_notification_summary_consistency', array( $this, 'send_slack_notification' ) );
@@ -111,11 +114,12 @@ class Consistency {
 	/**
 	 * Send an email to the translators.
 	 *
-	 * @param array $users_to_notify The users to notify.
+	 * @param int $months  The number of months.
+	 * @param int $user_id The user ID.
 	 *
 	 * @return void
 	 */
-	public function send_email_to_translators( $months, $user_id ): void {
+	public function send_email_to_translators( int $months, int $user_id ): void {
 		$years = intdiv( $months, 12 );
 		// Translators: Number of years or months of translation consistency, to be used in the email subject.
 		$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );
@@ -158,12 +162,12 @@ The Global Polyglots Team',
 	}
 
 	/**
-	 * Send a Slack notification to the users
+	 * Send a Slack notification about the notified users
 	 *
-	 * @param array $users_to_notify The users to notify.
+	 * @param array $users_notified The users that were notify.
 	 */
-	public function send_slack_notifications( array $users_to_notify ) {
-		foreach ( $users_to_notify as $months => $user_ids ) {
+	public function send_slack_notifications( array $users_notified ) {
+		foreach ( $users_notified as $months => $user_ids ) {
 			$years = intdiv( $months, 12 );
 			// Translators: Number of years or months of translation consistency, to be used in the Slack message.
 			$time_period = $years > 0 ? sprintf( _n( '%d year', '%d years', $years, 'wporg-gp-engagement' ), $years ) : sprintf( _n( '%d month', '%d months', $months, 'wporg-gp-engagement' ), $months );

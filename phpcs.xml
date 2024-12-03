@@ -7,6 +7,10 @@
     <file>.</file>
     <file>inc</file>
 
+    <rule ref="WordPress.Files.FileName.InvalidClassFileName">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
     <!-- Exclude the vendor directory -->
     <exclude-pattern>*/vendor/*</exclude-pattern>
 

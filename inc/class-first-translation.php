@@ -15,6 +15,9 @@ use GP_Translation;
  * Sends an email to translators who for the first time had a translation approved.
  */
 class First_Translation {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'wporg_translate_notification_first_translation', array( $this, 'send_email_to_translator' ) );
 		add_action( 'wporg_translate_notification_summary_first_translation', array( $this, 'send_slack_notification' ) );
@@ -41,7 +44,6 @@ class First_Translation {
 		do_action( 'wporg_translate_notification_first_translation', $translation );
 		$this->update_user_option( $translation->user_id );
 		do_action( 'wporg_translate_notification_summary_first_translation', $translation );
-
 	}
 
 	/**

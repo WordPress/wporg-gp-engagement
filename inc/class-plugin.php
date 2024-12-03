@@ -112,9 +112,4 @@ class Plugin extends GP_Route {
 			wp_schedule_event( $timestamp, 'monthly', 'gp_engagement_consistency' );
 		}
 	}
-
-	public function send_notification_email( $user, $subject, $message ) {
-		$email = new Notification();
-		$email->send_email( $user, $subject, $message );
-	}
 }

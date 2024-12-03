@@ -1,10 +1,21 @@
 <?php
+/**
+ * GlotPress Engagement Tests Bootstrap.
+ *
+ * @package wporg-gp-engagement
+ */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 if ( ! $_tests_dir ) {
 	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
+/**
+ * Get the path to the GlotPress repository.
+ *
+ * @param string $path The path to append to the GlotPress repository path.
+ * @return string The full path to the GlotPress repository.
+ */
 function _glotpress_path( string $path ): string {
 	$glotpress_path = dirname( __DIR__, 2 ) . '/glotpress/';
 	if ( getenv( 'GITHUB_ACTIONS' ) ) {
@@ -47,4 +58,3 @@ require "$_tests_dir/includes/bootstrap.php";
 require_once _glotpress_path( '/tests/phpunit/lib/testcase.php' );
 require_once _glotpress_path( '/tests/phpunit/lib/testcase-route.php' );
 require_once _glotpress_path( '/tests/phpunit/lib/testcase-request.php' );
-

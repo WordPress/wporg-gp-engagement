@@ -14,22 +14,25 @@ use WP_CLI;
  * Sends an email to translators in their translation anniversary.
  */
 class Inactive {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'wporg_translate_notification_inactive', array( $this, 'send_email_to_translator' ) );
 		add_action( 'wporg_translate_notification_summary_inactive', array( $this, 'send_slack_notification' ) );
 	}
 		/**
-	 * Send an email to translators who have been inactive in the last years.
-	 *
-	 * @return void
-	 */
+		 * Send an email to translators who have been inactive in the last years.
+		 *
+		 * @return void
+		 */
 	public function __invoke() {
 			$one_year_ago   = ( new DateTime() )->modify( '-1 year' )->format( 'Y-m-d' );
 			$all_users      = $this->get_users_with_translation_on_date( $one_year_ago );
 			$inactive_users = $this->get_inactive_users( $all_users, $one_year_ago );
-			foreach ( $inactive_users as $user_id ) {
-				do_action( 'wporg_translate_notification_inactive', $user_id );
-			}
+		foreach ( $inactive_users as $user_id ) {
+			do_action( 'wporg_translate_notification_inactive', $user_id );
+		}
 
 			do_action( 'wporg_translate_notification_summary_inactive', $inactive_users );
 	}

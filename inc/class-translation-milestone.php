@@ -34,6 +34,9 @@ class Translation_Milestone {
 		1000000,
 	);
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'wporg_translate_notification_milestone', array( $this, 'send_email_to_translator' ), 10, 2 );
 		add_action( 'wporg_translate_notification_summary_milestone', array( $this, 'send_slack_notification' ), 10, 2 );

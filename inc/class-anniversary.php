@@ -13,6 +13,9 @@ use WP_CLI;
  * Sends an email to translators in their translation anniversary.
  */
 class Anniversary {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		add_action( 'wporg_translate_notification_anniversary', array( $this, 'send_email_to_translator' ), 10, 3 );
 		add_action( 'wporg_translate_notification_summary_anniversary', array( $this, 'send_slack_notification' ), 10, 2 );
@@ -103,8 +106,8 @@ class Anniversary {
 	 */
 	private function get_number_of_translations( int $user_id ): int {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return intval(
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT COUNT(id)
@@ -120,9 +123,9 @@ class Anniversary {
 	/**
 	 * Send an email to the translators.
 	 *
-	 * @param int $user_id      The user_id of the anniversary user.
+	 * @param int    $user_id      The user_id of the anniversary user.
 	 * @param string $date      The user's first translation date (Y-m-d format).
-	 * @param int $number_of_translations The number of translations made so far.
+	 * @param int    $number_of_translations The number of translations made so far.
 	 *
 	 * @return void
 	 */
@@ -139,7 +142,7 @@ class Anniversary {
 		$message = sprintf(
 		// translators: Email body. %1$s: Display name. %2$d: number of years since the first translation. %3$d: number of translations.
 			_n(
-					'
+				'
 Dear %1$s,
 <br><br>
 do you remember? On this day, %2$d year ago, you contributed your first translation to translate.wordpress.org.
@@ -150,7 +153,7 @@ Keep up the great work!
 <br><br>
 The Global Polyglots Team
 ',
-					'
+				'
 Dear %1$s,
 <br><br>
 do you remember? On this day, %2$d years ago, you contributed your first translation to translate.wordpress.org.
