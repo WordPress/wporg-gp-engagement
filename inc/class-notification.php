@@ -50,6 +50,10 @@ class Notification {
 			'From: Translating WordPress.org <no-reply@wordpress.org>',
 		);
 
+		$random_sentence = new Random_Sentence();
+		$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
+		$message        .= $random_sentence->random_string();
+
 		if ( defined( 'WPORG_SANDBOXED' ) && WPORG_SANDBOXED ) {
 			$email = $this->testing_email;
 			wp_mail( $email, $subject, $message, $headers );

@@ -16,6 +16,14 @@ use GP_Translation;
  */
 class First_Translation {
 	/**
+	 * Constructor.
+	 */
+	public function __construct() {
+		add_action( 'wporg_translate_notification_first_translation', array( $this, 'send_email_to_translator' ) );
+		add_action( 'wporg_translate_notification_summary_first_translation', array( $this, 'send_slack_notification' ) );
+	}
+
+	/**
 	 * Send an email to translators who for the first time today had a translation approved.
 	 *
 	 * @param GP_Translation|null $translation The translation that was saved.
@@ -33,9 +41,9 @@ class First_Translation {
 			return;
 		}
 
-		$this->send_email_to_translator( $translation );
+		do_action( 'wporg_translate_notification_first_translation', $translation );
 		$this->update_user_option( $translation->user_id );
-		$this->send_slack_notification( $translation );
+		do_action( 'wporg_translate_notification_summary_first_translation', $translation );
 	}
 
 	/**
@@ -106,7 +114,7 @@ class First_Translation {
 	 *
 	 * @return void
 	 */
-	private function send_email_to_translator( GP_Translation $translation ) {
+	public function send_email_to_translator( GP_Translation $translation ) {
 		$notification_elements = $this->get_notification_elements( $translation );
 		if ( false === $notification_elements ) {
 			return;
@@ -170,12 +178,7 @@ The Global Polyglots Team',
 
 		$message = wp_kses( $message, $allowed_html );
 
-		$random_sentence = new Random_Sentence();
-		$message        .= '<h3>💡 ' . esc_html__( 'Did you know...', 'wporg-gp-engagement' ) . '</h3>';
-		$message        .= $random_sentence->random_string();
-
-		$notification = new Notification();
-		$notification->send_email( $user, $subject, $message );
+		do_action( 'wporg_translate_notification_email', $user, $subject, $message );
 	}
 
 	/**
@@ -185,7 +188,7 @@ The Global Polyglots Team',
 	 *
 	 * @return void
 	 */
-	private function send_slack_notification( GP_Translation $translation ) {
+	public function send_slack_notification( GP_Translation $translation ) {
 		$notification_elements = $this->get_notification_elements( $translation );
 		if ( false === $notification_elements ) {
 			return;
@@ -200,8 +203,7 @@ The Global Polyglots Team',
 			$project_url
 		);
 
-		$notification = new Notification();
-		$notification->send_slack_notification( $message );
+		do_action( 'wporg_translate_notification_slack', $message );
 	}
 
 	/**
