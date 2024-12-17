@@ -18,10 +18,10 @@ class Anniversary_Test extends Base_Test {
 	 */
 	public function anniversary_data_provider() {
 		return array(
-			'today'         => array( time(), 0 ),
-			'1 years ago'   => array( strtotime( '-1 year' ), 1 ),
-			'1.5 years ago' => array( strtotime( '-1.5 year' ), 0 ),
-			'2 years ago'   => array( strtotime( '-2 year' ), 1 ),
+			'today'         => array( time(), 0, 0 ),
+			'1 years ago'   => array( strtotime( '-1 year' ), 1, 1 ),
+			'1.5 years ago' => array( strtotime( '-1.5 year' ), 0, 0 ),
+			'2 years ago'   => array( strtotime( '-2 year' ), 1, 1 ),
 		);
 	}
 
@@ -33,7 +33,7 @@ class Anniversary_Test extends Base_Test {
 	 * @param int $date     The date to test.
 	 * @param int $expected The expected number of calls to the mock action.
 	 */
-	public function test_anniversary( $date, $expected ) {
+	public function test_anniversary( $date, $expected, $expected_summary ) {
 
 		$user = $this->factory->user->create();
 
@@ -51,9 +51,11 @@ class Anniversary_Test extends Base_Test {
 
 		$mock = new \MockAction();
 		add_action( 'wporg_translate_notification_anniversary', array( $mock, 'action' ), 10, 2 );
+		add_action( 'wporg_translate_notification_summary_anniversary', array( $mock, 'action' ) );
 
 		$anniversary();
 
-		$this->assertEquals( $expected, $mock->get_call_count() );
+		$this->assertEquals( $expected, $mock->get_call_count('wporg_translate_notification_anniversary') );
+		$this->assertEquals( $expected_summary, $mock->get_call_count('wporg_translate_notification_summary_anniversary') );
 	}
 }
